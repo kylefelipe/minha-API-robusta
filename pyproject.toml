@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "minha-api-robusta"
+version = "0.0.0"
+description = "Exercício do curso do Cássio Botaro Construindo APIs Robustas, como deve ser."
+authors = ["Kyle Felipe Vieira Roberto <kylefelipe@gmail.com>"]
+readme = "README.md"
+packages = [{include = "minha_api_robusta"}]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+fastapi = "^0.95.2"
+httpx = "^0.24.1"
+uvicorn = "^0.22.0"
+
+
+[tool.poetry.group.dev.dependencies]
+httpie = "^3.2.2"
+pytest = "^7.3.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
