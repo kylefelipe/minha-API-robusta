@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from uuid import UUID
 
 
-from api_pedidos.api import app, recupera_itens_por_pedido
+from api_pedidos.api import app, recuperar_itens_por_pedido
 from api_pedidos.schema import Item
 from api_pedidos.excecao import PedidoNaoEncontradoError, FalhaDeComunicacaoError
 
@@ -23,7 +23,7 @@ def sobreescreve_recupera_itens_por_pedido():
                 raise itens_ou_erro
             return itens_ou_erro
 
-        app.dependency_overrides[recupera_itens_por_pedido] = duble
+        app.dependency_overrides[recuperar_itens_por_pedido] = duble
 
     yield _sobreescreve_recupera_itens_por_pedido
     app.dependency_overrides.clear()
@@ -51,7 +51,7 @@ class TestListarPedidos:
         response = client.get("/orders/valor-invalido/items")
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-    def test_quando_identificacao_do_pedido_nao_encontrado_um_erro_deve_ser_retornado(
+    def test_quando_pedido_nao_encontrado_um_erro_deve_ser_retornado(
         self, client, sobreescreve_recupera_itens_por_pedido
     ):
         sobreescreve_recupera_itens_por_pedido(PedidoNaoEncontradoError())
@@ -88,9 +88,12 @@ class TestListarPedidos:
         sobreescreve_recupera_itens_por_pedido(itens)
         resposta = client.get("/orders/7e290683-d67b-4f96-a940-44bef1f69d21/items")
         assert resposta.json() == itens
+
     def test_quando_fonte_de_pedidos_falha_um_erro_deve_ser_retornado(
         self, client, sobreescreve_recupera_itens_por_pedido
     ):
         sobreescreve_recupera_itens_por_pedido(FalhaDeComunicacaoError())
         resposta = client.get("/orders/ea78b59b-885d-4e7b-9cd0-d54acadb4933/items")
         assert resposta.status_code == HTTPStatus.BAD_GATEWAY
+
+

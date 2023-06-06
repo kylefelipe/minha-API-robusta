@@ -5,12 +5,13 @@ from uuid import UUID
 
 from api_pedidos.excecao import PedidoNaoEncontradoError, FalhaDeComunicacaoError
 from api_pedidos.schema import Item
+from api_pedidos.magalu_api import recuperar_itens_por_pedido
 
 app = FastAPI()
 
 
-def recupera_itens_por_pedido(order_id: UUID) -> list[Item]:
-    pass
+# def recuperar_itens_por_pedido(order_id: UUID) -> list[Item]:
+#     pass
 
 
 @app.exception_handler(PedidoNaoEncontradoError)
@@ -35,5 +36,5 @@ async def healthcheck():
 
 
 @app.get("/orders/{order_id}/items")
-def list_items(items: list[Item] = Depends(recupera_itens_por_pedido)):
+def list_items(items: list[Item] = Depends(recuperar_itens_por_pedido)):
     return items
