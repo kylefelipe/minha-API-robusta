@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: 3.10
       - name: Instal poetry
-        run: pipx install poetry
+        run: pip install poetry
 
       - name: Install dependencies
         run: poetry install
