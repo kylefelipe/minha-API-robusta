@@ -1,10 +1,13 @@
 from pydantic import BaseModel
 
+
 class ErrorResponse(BaseModel):
     message: str
 
+
 class HealthCheckResponse(BaseModel):
     status: str
+
 
 class Item(BaseModel):
     sku: str

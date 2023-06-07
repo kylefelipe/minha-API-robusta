@@ -1,12 +1,15 @@
-import pytest
 from http import HTTPStatus
-from fastapi.testclient import TestClient
 from uuid import UUID
 
+import pytest
+from fastapi.testclient import TestClient
 
 from api_pedidos.api import app, recuperar_itens_por_pedido
+from api_pedidos.excecao import (
+    FalhaDeComunicacaoError,
+    PedidoNaoEncontradoError,
+)
 from api_pedidos.schema import Item
-from api_pedidos.excecao import PedidoNaoEncontradoError, FalhaDeComunicacaoError
 
 
 @pytest.fixture
@@ -44,7 +47,7 @@ class TestHealthCheck:
 
 
 class TestListarPedidos:
-    def test_quando_identificacao_do_pedido_invalido_um_erro_deve_ser_retornado(
+    def test_se_identificacao_do_pedido_invalido_um_erro_deve_ser_retornado(
         self,
         client,
     ):
@@ -55,14 +58,18 @@ class TestListarPedidos:
         self, client, sobreescreve_recupera_itens_por_pedido
     ):
         sobreescreve_recupera_itens_por_pedido(PedidoNaoEncontradoError())
-        response = client.get("/orders/00000000-0000-0000-0000-000000000000/items")
+        response = client.get(
+            "/orders/00000000-0000-0000-0000-000000000000/items"
+        )
         assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_quando_encontrar_pedido_codigo_ok_deve_ser_retornado(
         self, client, sobreescreve_recupera_itens_por_pedido
     ):
         sobreescreve_recupera_itens_por_pedido([])
-        resposta = client.get("/orders/7e290683-d67b-4f96-a940-44bef1f69d21/items")
+        resposta = client.get(
+            "/orders/7e290683-d67b-4f96-a940-44bef1f69d21/items"
+        )
         assert resposta.status_code == HTTPStatus.OK
 
     def test_quando_encontrar_pedido_deve_retornar_itens(
@@ -86,14 +93,16 @@ class TestListarPedidos:
         ]
 
         sobreescreve_recupera_itens_por_pedido(itens)
-        resposta = client.get("/orders/7e290683-d67b-4f96-a940-44bef1f69d21/items")
+        resposta = client.get(
+            "/orders/7e290683-d67b-4f96-a940-44bef1f69d21/items"
+        )
         assert resposta.json() == itens
 
     def test_quando_fonte_de_pedidos_falha_um_erro_deve_ser_retornado(
         self, client, sobreescreve_recupera_itens_por_pedido
     ):
         sobreescreve_recupera_itens_por_pedido(FalhaDeComunicacaoError())
-        resposta = client.get("/orders/ea78b59b-885d-4e7b-9cd0-d54acadb4933/items")
+        resposta = client.get(
+            "/orders/ea78b59b-885d-4e7b-9cd0-d54acadb4933/items"
+        )
         assert resposta.status_code == HTTPStatus.BAD_GATEWAY
-
-

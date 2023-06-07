@@ -1,10 +1,12 @@
 from http import HTTPStatus
-from uuid import UUID
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from api_pedidos.excecao import FalhaDeComunicacaoError, PedidoNaoEncontradoError
+from api_pedidos.excecao import (
+    FalhaDeComunicacaoError,
+    PedidoNaoEncontradoError,
+)
 from api_pedidos.magalu_api import recuperar_itens_por_pedido
 from api_pedidos.schema import ErrorResponse, HealthCheckResponse, Item
 
@@ -16,7 +18,9 @@ app = FastAPI()
 
 
 @app.exception_handler(PedidoNaoEncontradoError)
-def tratar_erro_pedido_nao_encontrado(request: Request, exc: PedidoNaoEncontradoError):
+def tratar_erro_pedido_nao_encontrado(
+    request: Request, exc: PedidoNaoEncontradoError
+):
     return JSONResponse(
         status_code=HTTPStatus.NOT_FOUND,
         content={"message": "Pedido não encontrado"},
@@ -24,7 +28,9 @@ def tratar_erro_pedido_nao_encontrado(request: Request, exc: PedidoNaoEncontrado
 
 
 @app.exception_handler(FalhaDeComunicacaoError)
-def trata_erro_falha_de_comunicacao(request: Request, exc: FalhaDeComunicacaoError):
+def trata_erro_falha_de_comunicacao(
+    request: Request, exc: FalhaDeComunicacaoError
+):
     return JSONResponse(
         status_code=HTTPStatus.BAD_GATEWAY,
         content={"message": "Falha de comunicação"},

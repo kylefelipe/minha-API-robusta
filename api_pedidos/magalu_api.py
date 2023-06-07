@@ -1,9 +1,14 @@
 import os
 from http import HTTPStatus
 from uuid import UUID
-from api_pedidos.schema import Item
-from api_pedidos.excecao import PedidoNaoEncontradoError, FalhaDeComunicacaoError
+
 import httpx
+
+from api_pedidos.excecao import (
+    FalhaDeComunicacaoError,
+    PedidoNaoEncontradoError,
+)
+from api_pedidos.schema import Item
 
 # tenant e apikey fixos para facilitar o desenvolvimento
 APIKEY = os.environ.get("APIKEY", "5734143a-595d-405d-9c97-6c198537108f")
@@ -15,7 +20,10 @@ MAESTRO_SERVICE_URL = f"{MAGALU_API_URL}/maestro/v1"
 
 def _recupera_itens_por_pacote(uuid_do_pedido: UUID, uuid_do_pacote: UUID):
     response = httpx.get(
-        f"{MAESTRO_SERVICE_URL}/orders/{uuid_do_pedido}/packages/{uuid_do_pacote}/items",
+        (
+            f"{MAESTRO_SERVICE_URL}/orders/"
+            f"{uuid_do_pedido}/packages/{uuid_do_pacote}/items"
+        ),
         headers={"X-Api-Key": APIKEY, "X-Tenant-Id": TENANT_ID},
     )
     response.raise_for_status()
@@ -30,6 +38,7 @@ def _recupera_itens_por_pacote(uuid_do_pedido: UUID, uuid_do_pacote: UUID):
         for item in response.json()
     ]
 
+
 def recuperar_itens_por_pedido(order_id: UUID) -> list[Item]:
     try:
         response = httpx.get(
@@ -38,12 +47,10 @@ def recuperar_itens_por_pedido(order_id: UUID) -> list[Item]:
         )
         response.raise_for_status()
         pacotes = response.json()["packages"]
-        print('>>>: ', pacotes[0])
+        print(">>>: ", pacotes[0])
         itens = []
         for pacote in pacotes:
-            itens.extend(
-                _recupera_itens_por_pacote(order_id, pacote["uuid"])
-            )
+            itens.extend(_recupera_itens_por_pacote(order_id, pacote["uuid"]))
         return itens
     except httpx.HTTPStatusError as exc:
         if exc.response.status_code == HTTPStatus.NOT_FOUND:
