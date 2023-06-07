@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: poetry install -vv
+        run: poetry install
 
       - name: Run isort
         shell: bash
